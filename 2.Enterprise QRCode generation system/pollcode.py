@@ -1,4 +1,32 @@
-import os 
+import os, time, string, random, tkinter, qrcode
+from tkinter import *
+import tkinter
+import tkinter.messagebox 
+import tkinter.filedialog
+from string import digits
+
+root = tkinter.Tk()
+root.attributes('-alpha', 0)    # 透明度设置
+# 初始化数据
+number = '123456789'
+letter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+allis = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+'
+i = 0
+randstr = []
+randsec = []
+randfir = ''
+fourth = []
+fifth = []
+randfir = ''
+randsec = ''
+randthr = ''
+str_one = ''
+strone = ''
+strtwo = ''
+nextcard = ''
+userput = ''
+nres_letter =''
+
 
 # 创建文件夹
 def mkdir(path):
@@ -42,7 +70,7 @@ def inputbox(showstr, showorder, length):
         if showorder == 3:
             if str.isdigit(instr):
                 if len(instr) != length:
-                    print('\033[1;31;47m 必须输入，'+str(length)+'个字母，请重新输入！！\033[0m')
+                    print('\033[1;31;47m 必须输入，'+str(length)+'个数字，请重新输入！！\033[0m')
                     return '0'
                 else:
                     return instr
@@ -51,12 +79,111 @@ def inputbox(showstr, showorder, length):
                 return '0'
     else:
         print('\033[1;31;47m 输入为空，清重新输入！！\033[0m')
-                return '0'
+        return '0'
 
 
-# 读取已生成对防伪信息
+# 将生成的防伪码写入文件/屏幕   s--savfe
+def wfile(sstr, sfile, typeis, smsg, datapath):
+    mkdir(datapath)
+    datafile = datapath + '/' + sfile
+    file_ = open(datafile, 'w')
+    wrlist = sstr
+    pdata = ''      # 屏幕输出的防伪码信息
+    wdata = ''      # 保存到文本的防伪码信息
+    for i in range(len(wrlist)):
+        wdata = str(wrlist[i].replace('[', '')).replace(']', '')
+        wdata = wdata.replace('"', '').replace('"', '')
+        file_.write(str(wdata))
+        pdata = pdata + wdata 
+    file_.close()
+    print('\033[1;31;47m' + pdata +'\033[0m')   # 屏幕输出生成的防伪信息
+    if typeis != 'no':
+        # 显示输出完成
+        tkinter.messagebox.showinfo('提示：', smsg + str(len(randstr)) + '\n 防伪码文件存放位置' + datafile ) 
+        root.withdraw()     # 关闭辅助窗口
+
+
+def input_validation(insel):
+    if str.isdigit(insel):
+        if insel == 0:
+            print('\033[1;31;47m 输入非法，清重新输入！！\033[0m')
+            return 0
+        else:
+            return insel 
+    else:
+        print('\033[1;31;47m 输入非法，清重新输入！！\033[0m')
+        return 0
+
+
+def mainmenu():
+    print('''
+            \033[1;31;47m
+            **********************************************************
+                                企业编码生成系统
+            **********************************************************
+                    1.生成6位数字防伪编码（21536型)
+                    2.生成9位系列产品数字防伪编码（879-335439型)
+                    3.生成25位混合产品序列号(B2R12-N7TE8-9IET2-FE)
+                    4.生成含数据分析功能的防伪编码(5A61M0583D2)
+                    5.智能批量生成带数据分析功能的防伪码
+                    6.后续补加生成防伪码(5A61M0583D2)
+                    7.EAN-13条形码批量生成
+                    8.二维码批量输出
+                    9.企业粉丝防伪码抽奖
+            **********************************************************
+                说明：通过数字键选择菜单
+            **********************************************************
+            \033[0m''')
+
+
+# 生成六位防伪编码
+def scode1(schoice):
+    incount = inputbox('\033[1;31;47m 请输入想生成的伪码数量！！\033[0m', 1, 0)
+    # 获得0结果表示重来
+    while int(incount) == 0:
+        incount = inputbox('\033[1;31;47m 请输入想生成的伪码数量！！\033[0m', 1, 0)
+    randstr.clear()
+    for j in range(int(incount)):
+        randfir = ""    # 存储单条防伪变量
+        for i in range(6):
+            randfir = randfir + random.choice(number)
+        randfir = randfir + '\n'
+        randstr.append(randfir)
+    # 调用函数写入文件屏幕输入
+    wfile(randstr, 'scode' + str(schoice) + '.txt', '', '已生成6位防伪编码共计：', 'codepath')
 
 
 if __name__ == "__main__":
-    #inputbox('test：', 1, 5)
-    print(str.isalpha('aaa'))
+    while i<9:
+        # 调入程序主界面菜单
+        mainmenu()
+        # 操作
+        choice = input('\033[1;31;47m 请输入您要操作的菜单选项！！\033[0m')
+        if len(choice) != 0:
+            choice = input_validation(choice)
+            choice = int(choice)    # 对书本的更正
+            # 根据序号选菜单
+            if choice == 1:
+                scode1(str(choice))
+            if choice == 2:
+                scode2(choice)
+            if choice == 3:
+                scode3(choice)
+            if choice == 4:
+                scode4(choice)
+            if choice == 5:
+                scode5(choice)
+            if choice == 6:
+                scode6(choice)
+            if choice == 7:
+                scode7(choice)
+            if choice == 8:
+                scode8(choice)
+            if choice == 9:
+                scode9(choice)
+            if choice == 0:
+                i = 0
+                print('正在推出系统...')
+        else:
+            print('\033[1;31;47m 输入非法，清重新输入！！\033[0m')
+            
