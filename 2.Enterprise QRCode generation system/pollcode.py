@@ -96,7 +96,7 @@ def wfile(sstr, sfile, typeis, smsg, datapath):
         file_.write(str(wdata))
         pdata = pdata + wdata 
     file_.close()
-    print('\033[1;31;47m' + pdata +'\033[0m')   # 屏幕输出生成的防伪信息
+    print('\033[1;31;47m' + str(len(wrlist)) +'\033[0m')   # 屏幕输出生成的防伪信息
     if typeis != 'no':
         # 显示输出完成
         tkinter.messagebox.showinfo('提示：', smsg + str(len(randstr)) + '\n 防伪码文件存放位置' + datafile ) 
@@ -151,6 +151,107 @@ def scode1(schoice):
         randstr.append(randfir)
     # 调用函数写入文件屏幕输入
     wfile(randstr, 'scode' + str(schoice) + '.txt', '', '已生成6位防伪编码共计：', 'codepath')
+
+
+# 生成九位系列产品的防伪编码
+def scode2(schoice):
+    # 起始位数
+    ordstart = inputbox('\033[1;31;47m 请输入序列产品的数字起始号（三位）！！\033[0m', 3, 3)
+    while int(ordstart) == 0:
+        ordstart = inputbox('\033[1;31;47m 请输入序列产品的数字起始号！！\033[0m', 3, 3)
+    # 系列数量
+    ordcount = inputbox('\033[1;31;47m 请输入序列产品的数量！！\033[0m', 1, 0)
+    while int(ordcount) <1 or int(ordcount)>999:
+        ordstart = inputbox('\033[1;31;47m 请输入序列产品的数量！！\033[0m', 1, 0)
+    # 每个产品的数量
+    incount = inputbox('\033[1;31;47m 生成每个系列产品的防伪码数量！！\033[0m', 1, 0)
+    while incount == 0:
+        incount = inputbox('\033[1;31;47m 生成每个系列产品的防伪码数量！！\033[0m', 1, 0)
+
+    randstr.clear()
+    for m in range(int(ordcount)):
+        for j in range(int(incount)):
+            randfir = ''
+            for i in range(6):
+                randfir = randfir + random.choice(number)
+            while str(int(ordstart) + m) + randfir + '\n' in randstr:
+                randfir = ''
+                for i in range(6):
+                    randfir = randfir + random.choice(number)
+            # 生成单条防伪码的信息
+            randstr.append(str(int(ordstart) + m) + randfir + '\n')
+    wfile(randstr, 'scode'+str(schoice)+'.txt','', '已生成九位防伪码共计：', 'codepath')
+
+
+# 生成25位防伪码
+def scode3(schoice):
+    # 生成防伪码的数量
+    incount = inputbox('\033[1;31;47m 请输入要生成的防伪码数量！！ \033[0m', 1, 0)
+    while int(incount) == 0:
+        incount = inputbox('\033[1;31;47m 请输入要生成的防伪码数量！！ \033[0m', 1, 0)
+    randstr.clear()
+    for j in range(int(incount)):
+        strone = ''
+        for i in range(25):
+            strone = strone + random.choice(letter)
+            # 生成的下划线每隔五位加一个下划线
+            strtwo = strone[:5] + '-' + strone[5:10] + '-' + strone[10:15] + '-' + strone[15:20] + '-' + strone[20:25] + '\n'
+        # 防止编码重复
+        while strtwo in randstr:
+            strone = ''
+            for i in range(25):
+                strone = strone + random.choice(letter)
+                # 生成的下划线每隔五位加一个下划线
+                strtwo = strone[:5] + '-' + strone[5:10] + '-' + strone[10:15] + '-' + strone[15:20] + '-' + strone[20:25] + '\n'
+        randstr.append(strtwo)
+    wfile(randstr, 'scode' + str(schoice) + '.txt', '', '已生成25位防伪编码: ', 'codepath')
+
+
+# 生成带数据分析的防伪码
+def scode4(schoice):
+    intype = inputbox('\033[1;31;47m 请输入数据分析编号（三位字母）！！ \033[0m', 2, 3)
+    # 验证
+    while not str.isalpha(intype) or len(intype) != 3:
+        intype = inputbox('\033[1;31;47m 请输入数据分析编号（三位字母）！！ \033[0m', 2, 3)
+    incount = inputbox('\033[1;31;47m 请输入生成带数据分析的伪码的数量！！ \033[0m', 1, 0)
+    # 验证
+    while int(incount) == 0:
+        incount = inputbox('\033[1;31;47m 请输入生成带数据分析的伪码的数量！！ \033[0m', 1, 0)
+    ffcode(incount, intype, '', schoice)
+
+
+# 将数据分析的字母随机插入生成的六位数字中
+def ffcode(scount, typestr, ismessage, schoice):
+    randstr.clear()
+    for j in range(int(scount)):
+        strpro = typestr[0].upper()         # 区域分析
+        strtype = typestr[1].upper()        # 颜色分析
+        strclass = typestr[2].upper()       # 版本分析
+        randfir = random.sample(number, 3)  # 随机l采样三个位置，返回数组
+        randsec = sorted(randfir)
+        letterone = ''                      # 单条防伪码的变量
+        for i in range(9):
+            letterone = letterone + random.choice(number)
+        # 将三个字母按randsec顺讯插入单条数字防伪码 存储之sim变量
+        sim = str(letterone[0:int(randsec[0])]) + strpro +  \
+            str(letterone[int(randsec[0]):int(randsec[1])]) + strtype +     \
+            str(letterone[int(randsec[1]):int(randsec[2])]) + strclass +    \
+            str(letterone[int(randsec[2]):9]) + '\n'
+        while sim in randstr:
+            letterone = ''                      # 单条防伪码的变量
+            for i in range(9):
+                letterone = letterone + random.choice(number)
+            # 将三个字母按randsec顺讯插入单条数字防伪码 存储之sim变量
+            sim = str(letterone[0:int(randsec[0])]) + strpro + str(letterone[int(randsec[0]):int(randsec[1])]) + strtype +     \
+                str(letterone[int(randsec[1]):int(randsec[2])]) + strclass +    \
+                str(letterone[int(randsec[2]):9]) + '\n'
+        randstr.append(sim)
+    wfile(randstr, typestr+'scode' + str(schoice) + '.txt', ismessage, '生产含数据分析的编码共计', 'codepath')
+
+
+# 智能批量生成带数据分析功能的防伪码
+def scode5(schoice):
+    pass
 
 
 if __name__ == "__main__":
