@@ -218,6 +218,7 @@ def scode4(schoice):
     while int(incount) == 0:
         incount = inputbox('\033[1;31;47m 请输入生成带数据分析的伪码的数量！！ \033[0m', 1, 0)
     ffcode(incount, intype, '', schoice)
+    
 
 
 # 将数据分析的字母随机插入生成的六位数字中
@@ -251,7 +252,18 @@ def ffcode(scount, typestr, ismessage, schoice):
 
 # 智能批量生成带数据分析功能的防伪码
 def scode5(schoice):
-    pass
+    default_dir = r'codeauto.mri'
+    # tk的打开文件选择框
+    file_path = tkinter.filedialog.askopenfile(filetypes=[('Text file', '*.mri')], \
+        title=u'请选择智能批处理文件', initialdir=(os.path.expanduser(default_dir)))
+    codelist = openfile(file_path.name)
+    # 换行符为分割读取信息
+    codelist = codelist.split('\n')
+    print(codelist)
+    for item in codelist:
+        codea = item.split(',')[0]
+        codeb = item.split(',')[1]
+        ffcode(codeb, codea, 'no', schoice)
 
 
 if __name__ == "__main__":
